@@ -10,19 +10,6 @@ An offline-first Flow Launcher plugin for looking up Turkish words in the Turkis
 - **Zero External Dependencies:** Built using Python's standard library for minimal resource consumption and fast startup.
 - **Browser Integration:** Select a word and press `Enter` to open the word's definition page on the official TDK website.
 
-## Installation
-
-### Via Flow Launcher (Direct)
-Open Flow Launcher, type `pm install`, and paste the release URL:
-```cmd
-pm install https://github.com/emre-ekmel/tdk-sozluk-plugin/releases/download/v1.0.0/Flow.Launcher.Plugin.TDKSozluk.zip
-```
-
-### Manual Installation
-1. Download the latest release `.zip` file from the [releases](https://github.com/emre-ekmel/tdk-sozluk-plugin/releases) page.
-2. Extract the archive into your Flow Launcher plugins folder (typically `%APPDATA%\FlowLauncher\Plugins`).
-3. Restart Flow Launcher.
-
 ## Usage
 
 Activate Flow Launcher and type `tdk` followed by your query:
