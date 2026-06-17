@@ -35,7 +35,7 @@ jobs:
 
       - name: Zip files
         run: |
-          zip -r Flow.Launcher.Plugin.TDKSozluk.zip . -x '*.git*' '*__pycache__*' '*.pytest_cache*' 'tests/*' 'scripts/*' 'memory-bank/*' 'design.md' 'OPTIMIZATIONS.md' 'PluginStore-README.md' 'TDKSozluk-*.json' 'tdk-sozluk/*'
+          zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images lib main.py plugin.json
 
       - name: Publish
         uses: softprops/action-gh-release@v1
