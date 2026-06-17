@@ -10,6 +10,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       python_ver: 3.12
 
@@ -38,7 +40,7 @@ jobs:
           zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images lib main.py plugin.json
 
       - name: Publish
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: 'Flow.Launcher.Plugin.TDKSozluk.zip'
           tag_name: "v${{ steps.version.outputs.prop }}"
