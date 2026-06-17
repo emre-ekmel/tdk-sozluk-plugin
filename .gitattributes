@@ -1,0 +1,2 @@
+# Ensure the word list always uses LF line endings
+data/tdk_words.txt text eol=lf

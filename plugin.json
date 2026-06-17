@@ -1,0 +1,14 @@
+{
+    "$schema": "https://www.flowlauncher.com/schemas/plugin.schema.json",
+    "ID": "a1b2c3d4-5678-4ef0-abcd-1234567890ab",
+    "ActionKeyword": "tdk",
+    "ActionKeywords": ["tdk"],
+    "Name": "TDK Sözlük",
+    "Description": "Türk Dil Kurumu sözlüğünde hızlı kelime araması yapın.",
+    "Author": "emre-ekmel",
+    "Version": "1.0.0",
+    "Language": "python",
+    "Website": "https://github.com/emre-ekmel/tdk-sozluk-plugin",
+    "IcoPath": "images/icon.png",
+    "ExecuteFileName": "main.py"
+}

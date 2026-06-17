@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest
+.pytest_cache/
+
+# Flow Launcher SDK (CI installs via pip)
+lib/
+
+# Flow Launcher Store Submission (keep locally, don't push)
+TDKSozluk-*.json
+
+# Build artifacts
+*.zip
+
+# OS generated files
+.DS_Store
+Thumbs.db

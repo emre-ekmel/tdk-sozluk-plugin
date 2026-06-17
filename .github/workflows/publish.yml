@@ -1,0 +1,46 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - .github/workflows/*
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      python_ver: 3.12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.python_ver }}
+
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'plugin.json'
+          prop_path: 'Version'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ./requirements.txt -t ./lib
+
+      - name: Zip files
+        run: |
+          zip -r Flow.Launcher.Plugin.TDKSozluk.zip . -x '*.git*' '*__pycache__*' '*.pytest_cache*' 'tests/*' 'scripts/*' 'memory-bank/*' 'design.md' 'OPTIMIZATIONS.md' 'PluginStore-README.md' 'TDKSozluk-*.json' 'tdk-sozluk/*'
+
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'Flow.Launcher.Plugin.TDKSozluk.zip'
+          tag_name: "v${{ steps.version.outputs.prop }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
