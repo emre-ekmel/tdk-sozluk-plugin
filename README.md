@@ -24,21 +24,6 @@ To maintain a fast startup and low memory footprint (< 12MB RAM), the plugin avo
 - **Index:** A clean, pre-sorted newline-delimited wordlist (`data/tdk_words.txt`) compiled directly from official autocomplete dictionaries.
 - **Lookup:** Python's built-in `bisect` module is paired with a custom Turkish casing translator, ensuring exact alphabetical binary search index lookups at runtime.
 
-## Development
-
-If you want to contribute or build/test the plugin locally:
-
-### Prerequisites
-- Python 3.12+
-
-### Set Up & Run Tests
-Install dev dependencies and run the test suite:
-```bash
-pip install -r requirements.txt
-pip install pytest
-pytest
-```
-
 ### Rebuilding the Wordlist
 To fetch and update the word database from the official TDK api endpoint:
 ```bash
