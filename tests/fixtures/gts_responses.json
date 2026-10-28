@@ -1,0 +1,179 @@
+{
+ "kar": [
+  {
+   "madde_id": "36132",
+   "madde": "kar",
+   "lisan": "",
+   "anlamlarListe": [
+    {
+     "anlam_sira": "1",
+     "anlam": "Atmosferdeki su buharının yoğunlaşmasıyla oluşan ve yeryüzüne beyaz ve hafif billurlar biçiminde donarak düşen su buharı",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "isim",
+       "kisa_adi": "a."
+      }
+     ],
+     "orneklerListe": [
+      {
+       "ornek": "Kıştı, yerler iki karış kar tutmuştu."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "madde_id": "36138",
+   "madde": "kâr",
+   "lisan": "Farsça kār",
+   "anlamlarListe": [
+    {
+     "anlam_sira": "1",
+     "anlam": "Alışveriş işlerinin sağladığı para kazancı; getiri",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "isim",
+       "kisa_adi": "a."
+      }
+     ],
+     "orneklerListe": []
+    },
+    {
+     "anlam_sira": "2",
+     "anlam": "► yarar",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "mecaz",
+       "kisa_adi": "mec."
+      }
+     ],
+     "orneklerListe": [
+      {
+       "ornek": "Bundan benim hiçbir kârım yok."
+      }
+     ]
+    },
+    {
+     "anlam_sira": "3",
+     "anlam": "Üretim faktörlerinden biri olan girişimcinin üretimden aldığı pay",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "ekonomi",
+       "kisa_adi": "ekon."
+      }
+     ],
+     "orneklerListe": []
+    },
+    {
+     "anlam_sira": "4",
+     "anlam": "Maliyet fiyatıyla satış fiyatı arasındaki fark; ticaret",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "ticaret",
+       "kisa_adi": "tic."
+      }
+     ],
+     "orneklerListe": []
+    }
+   ]
+  }
+ ],
+ "yüz": [
+  {
+   "madde_id": "52112",
+   "madde": "yüz",
+   "lisan": "",
+   "anlamlarListe": [
+    {
+     "anlam_sira": "1",
+     "anlam": "Doksan dokuzdan sonra gelen sayının adı",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "isim",
+       "kisa_adi": "a."
+      }
+     ],
+     "orneklerListe": []
+    },
+    {
+     "anlam_sira": "2",
+     "anlam": "Bu sayıyı gösteren 100 ve C rakamlarının adı",
+     "orneklerListe": [],
+     "ozelliklerListe": []
+    },
+    {
+     "anlam_sira": "3",
+     "anlam": "On kere on, doksan dokuzdan bir artık",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "sıfat",
+       "kisa_adi": "sf."
+      }
+     ],
+     "orneklerListe": []
+    },
+    {
+     "anlam_sira": "4",
+     "anlam": "Kere, kat vb. kelimeler ile birlikte kullanılarak yapılan işin çokluğunu abartılı bir biçimde anlatan söz",
+     "orneklerListe": [
+      {
+       "ornek": "Hikmet Bey'in kurum ve edası, her zamankinden belki yüz kat üstündü."
+      }
+     ],
+     "ozelliklerListe": []
+    }
+   ]
+  },
+  {
+   "madde_id": "52113",
+   "madde": "yüz",
+   "lisan": "",
+   "anlamlarListe": [
+    {
+     "anlam_sira": "1",
+     "anlam": "Başta, alın, göz, burun, ağız, yanak ve çenenin bulunduğu ön bölüm; beniz, duluk, didar, sima, çehre, surat, suret, vecih, faça, bet (I)",
+     "ozelliklerListe": [
+      {
+       "tam_adi": "isim",
+       "kisa_adi": "a."
+      }
+     ],
+     "orneklerListe": [
+      {
+       "ornek": "Bir güzel çocuk yüzüyle gülümsüyor."
+      }
+     ]
+    },
+    {
+     "anlam_sira": "2",
+     "anlam": "► yüzey",
+     "orneklerListe": [
+      {
+       "ornek": "Suyun yüzünde."
+      }
+     ],
+     "ozelliklerListe": []
+    },
+    {
+     "anlam_sira": "3",
+     "anlam": "Kesici araçlarda ağız",
+     "orneklerListe": [
+      {
+       "ornek": "Bıçağın keskin yüzü."
+      }
+     ],
+     "ozelliklerListe": []
+    },
+    {
+     "anlam_sira": "4",
+     "anlam": "Bir kumaşın dikiş sırasında dışa getirilen gösterişli bölümü",
+     "orneklerListe": [],
+     "ozelliklerListe": []
+    }
+   ]
+  }
+ ],
+ "xqzw": {
+  "error": "Sonuç bulunamadı"
+ }
+}

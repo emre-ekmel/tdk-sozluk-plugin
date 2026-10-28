@@ -10,6 +10,7 @@ An offline-first Flow Launcher plugin for looking up Turkish words in the Turkis
 - **Typo-Friendly Matching:** Works without Turkish characters or circumflexes: `sisman` finds **şişman**, `hala` finds **hâlâ**, `bir seye` finds **(bir şeye) kulak vermek**.
 - **Persistent Process:** Uses Flow Launcher's JSON-RPC v2 (`Python_v2`) protocol, so the plugin starts once and answers each keystroke from memory.
 - **Zero External Dependencies:** Built using Python's standard library only, including the JSON-RPC layer.
+- **Definitions in the Launcher:** When what you type is a whole word, its first meaning appears under the result (hover for more). These are fetched from the TDK API and cached; if you're offline, search still works and only the meanings are skipped.
 - **Browser Integration:** Select a word and press `Enter` to open the word's definition page on the official TDK website.
 
 ## Installation
@@ -31,7 +32,7 @@ Activate Flow Launcher and type `tdk` followed by your query:
 
 - `tdk kalem` -> Shows matching words starting with "kalem".
 - Press `Enter` on a result to open its definition in your default browser.
-- Press `Shift + Enter` (or right-click) to open the context menu.
+- Press `Shift + Enter` (or right-click) to open the context menu: it lists every meaning of the word. Press `Enter` on a meaning to copy it, or copy the word itself.
 
 ## Under the Hood
 

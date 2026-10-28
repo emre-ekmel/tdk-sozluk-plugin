@@ -5,8 +5,10 @@ message per line over stdin/stdout. stdout is reserved for protocol messages;
 log to stderr instead of printing.
 """
 
+import concurrent.futures
 import json
 import sys
+import threading
 import traceback
 
 METHOD_NOT_FOUND = -32601
@@ -36,25 +38,61 @@ def handle_message(handlers, message):
     return {"jsonrpc": "2.0", "id": msg_id, "result": result}
 
 
-def serve(handlers, stdin=None, stdout=None, stop_methods=("close",)):
-    """Read requests line by line until EOF or a stop method has been answered."""
-    stdin = stdin or sys.stdin.buffer
-    stdout = stdout or sys.stdout.buffer
+class Server:
+    """Reads requests line by line until EOF or a stop method has been answered.
 
-    for line in stdin:
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            message = json.loads(line)
-        except ValueError:
-            print(f"Invalid JSON-RPC message: {line!r}", file=sys.stderr)
-            continue
+    Methods listed in `concurrent` run on worker threads so a slow one (a query
+    waiting on the network) doesn't hold up the next keystroke; responses may
+    then arrive out of order, which JSON-RPC ids allow.
+    """
 
-        response = handle_message(handlers, message)
+    def __init__(self, handlers, stdin=None, stdout=None, concurrent=(), stop_methods=("close",), max_workers=4):
+        self._handlers = handlers
+        self._stdin = stdin or sys.stdin.buffer
+        self._stdout = stdout or sys.stdout.buffer
+        self._concurrent = set(concurrent)
+        self._stop_methods = set(stop_methods)
+        self._max_workers = max_workers
+        self._write_lock = threading.Lock()
+
+    def notify(self, method, params):
+        """Send a notification to Flow (e.g. a public API call like CopyToClipboard)."""
+        self._write({"jsonrpc": "2.0", "method": method, "params": params})
+
+    def serve(self):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self._max_workers, thread_name_prefix="rpc") as pool:
+            for line in self._stdin:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    message = json.loads(line)
+                except ValueError:
+                    print(f"Invalid JSON-RPC message: {line!r}", file=sys.stderr)
+                    continue
+                if not isinstance(message, dict) or "method" not in message:
+                    continue  # responses to our notifications, or junk
+
+                method = message.get("method")
+                if method in self._concurrent:
+                    pool.submit(self._dispatch, message)
+                    continue
+
+                self._dispatch(message)
+                if method in self._stop_methods:
+                    break
+
+    def _dispatch(self, message):
+        response = handle_message(self._handlers, message)
         if response is not None:
-            stdout.write(json.dumps(response, ensure_ascii=False).encode("utf-8") + b"\n")
-            stdout.flush()
+            self._write(response)
 
-        if message.get("method") in stop_methods:
-            break
+    def _write(self, obj):
+        data = json.dumps(obj, ensure_ascii=False).encode("utf-8") + b"\n"
+        with self._write_lock:
+            self._stdout.write(data)
+            self._stdout.flush()
+
+
+def serve(handlers, stdin=None, stdout=None, stop_methods=("close",)):
+    Server(handlers, stdin=stdin, stdout=stdout, stop_methods=stop_methods).serve()
