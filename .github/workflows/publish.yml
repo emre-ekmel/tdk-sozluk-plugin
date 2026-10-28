@@ -54,7 +54,7 @@ jobs:
       - name: Zip files
         if: steps.release.outputs.exists == 'false'
         run: |
-          zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images main.py plugin.json
+          zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images main.py plugin.json -x "*__pycache__*"
 
       - name: Publish
         if: steps.release.outputs.exists == 'false'
