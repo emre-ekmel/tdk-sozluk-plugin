@@ -30,14 +30,15 @@ jobs:
           path: 'plugin.json'
           prop_path: 'Version'
 
-      - name: Install dependencies
+      - name: Run tests
         run: |
           python -m pip install --upgrade pip
-          pip install -r ./requirements.txt -t ./lib
+          pip install pytest
+          pytest
 
       - name: Zip files
         run: |
-          zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images lib main.py plugin.json
+          zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images main.py plugin.json
 
       - name: Publish
         uses: softprops/action-gh-release@v2

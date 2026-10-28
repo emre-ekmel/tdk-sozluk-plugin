@@ -7,7 +7,9 @@ An offline-first Flow Launcher plugin for looking up Turkish words in the Turkis
 - **Offline-First:** All search matching is performed locally against a pre-compiled database of ~98,000 words. No internet required for searching.
 - **Sub-1ms Lookups:** Uses binary search (`bisect`) for prefix matching, achieving O(log N) lookup times.
 - **Turkish Character Support:** Correctly handles Turkish-specific casing (e.g. `I`/`ı` and `İ`/`i` transitions) and character normalization during searches.
-- **Zero External Dependencies:** Built using Python's standard library for minimal resource consumption and fast startup.
+- **Typo-Friendly Matching:** Works without Turkish characters or circumflexes: `sisman` finds **şişman**, `hala` finds **hâlâ**, `bir seye` finds **(bir şeye) kulak vermek**.
+- **Persistent Process:** Uses Flow Launcher's JSON-RPC v2 (`Python_v2`) protocol, so the plugin starts once and answers each keystroke from memory.
+- **Zero External Dependencies:** Built using Python's standard library only, including the JSON-RPC layer.
 - **Browser Integration:** Select a word and press `Enter` to open the word's definition page on the official TDK website.
 
 ## Installation
@@ -45,11 +47,17 @@ If you want to contribute or build/test the plugin locally:
 - Python 3.12+
 
 ### Set Up & Run Tests
-Install dev dependencies and run the test suite:
+The plugin has no runtime dependencies; only `pytest` is needed for tests:
 ```bash
-pip install -r requirements.txt
 pip install pytest
 pytest
+```
+
+### Talking to the Plugin by Hand
+The plugin reads one JSON-RPC 2.0 request per line on stdin and writes responses to stdout:
+```bash
+printf '%s
+' '{"jsonrpc":"2.0","id":1,"method":"query","params":[{"search":"sisman"},{}]}'   '{"jsonrpc":"2.0","id":2,"method":"close","params":[]}' | python main.py
 ```
 
 ### Rebuilding the Wordlist
@@ -57,4 +65,4 @@ To fetch and update the word database from the official TDK api endpoint:
 ```bash
 python scripts/build_wordlist.py
 ```
-This script will download, sanitize, and sort the words in a format compatible with the binary search engine.
+This script will download, sanitize, and sort the words in a format compatible with the binary search engine. Use `python scripts/build_wordlist.py --resort` to re-sort the existing file without downloading (needed after changing the search key).

@@ -3,25 +3,68 @@ import sys
 import webbrowser
 import urllib.parse
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
-
-from lib.flowlauncher import FlowLauncher
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src.engine import SearchEngine
+from src.jsonrpc import serve
 from src.utils import sanitize
 from src.config import DATA_FILE, TDK_BROWSER_URL, MAX_RESULTS, PLUGIN_ICON
 
 
-class TDKDictionary(FlowLauncher):
-    _engine = None
+def _first_str(value):
+    # Flow may pass action/context arguments as "x", ["x"] or [["x"]].
+    while isinstance(value, list):
+        if not value:
+            return ""
+        value = value[0]
+    return value if isinstance(value, str) else ""
+
+
+def _query_text(query):
+    # Python_v2 sends the Query object (camelCase); "search" excludes the action keyword.
+    if isinstance(query, dict):
+        return query.get("search") or ""
+    return _first_str(query)
+
+
+class TDKDictionary:
+    def __init__(self, data_file=DATA_FILE):
+        self._data_file = data_file
+        self._engine = None
 
     def _get_engine(self):
-        if TDKDictionary._engine is None:
-            TDKDictionary._engine = SearchEngine(DATA_FILE)
-        return TDKDictionary._engine
+        if self._engine is None:
+            self._engine = SearchEngine(self._data_file)
+        return self._engine
 
-    def query(self, query):
-        raw_query = query.strip()
+    def handlers(self):
+        return {
+            "initialize": self.initialize,
+            "query": self.query,
+            "context_menu": self.context_menu,
+            "open_url": self.open_url,
+            "reload_data": self.reload_data,
+            "close": self.close,
+        }
+
+    def initialize(self, *_context):
+        # Load the wordlist up front so the first keystroke doesn't pay for it.
+        self._get_engine()
+        return {}
+
+    def reload_data(self, *_args):
+        self._engine = None
+        self._get_engine()
+        return {}
+
+    def close(self, *_args):
+        return {}
+
+    def query(self, query, *_settings):
+        return {"result": self.search_results(_query_text(query))}
+
+    def search_results(self, text):
+        raw_query = text.strip()
         if not raw_query:
             return [{
                 "Title": "TDK Sözlük",
@@ -33,8 +76,7 @@ class TDKDictionary(FlowLauncher):
         if not sanitized:
             return []
 
-        engine = self._get_engine()
-        matches = engine.search(sanitized, limit=MAX_RESULTS)
+        matches = self._get_engine().search(sanitized, limit=MAX_RESULTS)
 
         if not matches:
             return [{
@@ -45,7 +87,6 @@ class TDKDictionary(FlowLauncher):
 
         results = []
         for rank, word in enumerate(matches):
-            encoded_word = urllib.parse.quote(word, safe='')
             results.append({
                 "Title": word,
                 "SubTitle": f"TDK Sözlük'te '{word}' tanımını aç",
@@ -54,32 +95,36 @@ class TDKDictionary(FlowLauncher):
                 "Score": (len(matches) - rank) * 100,
                 "JsonRPCAction": {
                     "method": "open_url",
-                    "parameters": [encoded_word],
+                    "parameters": [word],
                 },
-                "ContextData": [word],
+                "ContextData": word,
             })
 
         return results
 
-    def open_url(self, encoded_word):
-        url = TDK_BROWSER_URL.format(word=encoded_word)
-        webbrowser.open(url)
+    def open_url(self, *args):
+        word = _first_str(list(args))
+        webbrowser.open(_tdk_url(word))
+        return {"hide": True}
 
-    def context_menu(self, data):
-        word = data[0] if data else ""
-        encoded_word = urllib.parse.quote(word, safe='')
-        return [
+    def context_menu(self, *args):
+        word = _first_str(list(args))
+        return {"result": [
             {
                 "Title": f"Tarayıcıda aç: {word}",
-                "SubTitle": TDK_BROWSER_URL.format(word=encoded_word),
+                "SubTitle": _tdk_url(word),
                 "IcoPath": PLUGIN_ICON,
                 "JsonRPCAction": {
                     "method": "open_url",
-                    "parameters": [encoded_word],
+                    "parameters": [word],
                 },
             },
-        ]
+        ]}
+
+
+def _tdk_url(word):
+    return TDK_BROWSER_URL.format(word=urllib.parse.quote(word, safe=''))
 
 
 if __name__ == "__main__":
-    TDKDictionary()
+    serve(TDKDictionary().handlers())
