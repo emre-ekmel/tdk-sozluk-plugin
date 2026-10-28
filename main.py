@@ -44,12 +44,14 @@ class TDKDictionary(FlowLauncher):
             }]
 
         results = []
-        for word in matches:
+        for rank, word in enumerate(matches):
             encoded_word = urllib.parse.quote(word, safe='')
             results.append({
                 "Title": word,
                 "SubTitle": f"TDK Sözlük'te '{word}' tanımını aç",
                 "IcoPath": PLUGIN_ICON,
+                # Explicit descending score keeps the engine's order (exact match first).
+                "Score": (len(matches) - rank) * 100,
                 "JsonRPCAction": {
                     "method": "open_url",
                     "parameters": [encoded_word],

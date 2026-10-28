@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.utils import sanitize, turkish_lower, normalize_query
+from src.utils import sanitize, turkish_lower, normalize_query, search_key
 
 
 class TestTurkishLower:
@@ -63,3 +63,22 @@ class TestNormalizeQuery:
 
     def test_plain_word(self):
         assert normalize_query("merhaba") == "merhaba"
+
+
+class TestSearchKey:
+    def test_folds_turkish_letters(self):
+        assert search_key("ÇĞIİÖŞÜ çğıiöşü") == "cgiiosu cgiiosu"
+
+    def test_folds_circumflex(self):
+        assert search_key("Hâlâ kâr îmân ÛÂ") == "hala kar iman ua"
+
+    def test_drops_punctuation(self):
+        assert search_key("(bir şeye) kulak vermek") == "bir seye kulak vermek"
+        assert search_key("allah'a, ısmarladık!") == "allaha ismarladik"
+
+    def test_collapses_whitespace(self):
+        assert search_key("  çok   boşluk  ") == "cok bosluk"
+
+    def test_empty(self):
+        assert search_key("") == ""
+        assert search_key("()") == ""

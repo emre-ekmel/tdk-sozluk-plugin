@@ -1,6 +1,6 @@
 import bisect
 
-from src.utils import turkish_lower
+from src.utils import search_key, turkish_lower
 
 
 class SearchEngine:
@@ -13,19 +13,21 @@ class SearchEngine:
         return len(self._words)
 
     def search(self, query, limit=10):
-        if not query:
+        query_key = search_key(query)
+        if not query_key:
             return []
 
-        query_lower = turkish_lower(query)
-        idx = bisect.bisect_left(self._words, query_lower, key=turkish_lower)
+        idx = bisect.bisect_left(self._words, query_key, key=search_key)
 
         results = []
         while idx < len(self._words) and len(results) < limit:
-            word_lower = turkish_lower(self._words[idx])
-            if word_lower.startswith(query_lower):
+            if search_key(self._words[idx]).startswith(query_key):
                 results.append(self._words[idx])
                 idx += 1
             else:
                 break
 
+        # Words spelled exactly as typed (e.g. "kâr" vs "kar") go first; sort is stable.
+        query_lower = turkish_lower(query.strip())
+        results.sort(key=lambda w: turkish_lower(w) != query_lower)
         return results
