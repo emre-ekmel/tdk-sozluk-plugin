@@ -15,6 +15,7 @@ from src.config import (
 
 # Fetch definitions for at most this many results that match the query exactly (e.g. "kar" -> kar, kâr).
 MAX_DEFINED_RESULTS = 3
+MAX_SUGGESTIONS = 5
 TOOLTIP_SENSES = 10
 
 
@@ -106,11 +107,7 @@ class TDKDictionary:
         matches = self._get_engine().search(sanitized, limit=MAX_RESULTS)
 
         if not matches:
-            return [{
-                "Title": f"'{raw_query}' bulunamadı",
-                "SubTitle": "TDK sözlüğünde bu kelime mevcut değil.",
-                "IcoPath": PLUGIN_ICON,
-            }]
+            return self._not_found_results(raw_query, sanitized)
 
         query_key = search_key(sanitized)
         exact = [w for w in matches if search_key(w) == query_key][:MAX_DEFINED_RESULTS]
@@ -135,6 +132,26 @@ class TDKDictionary:
                 result["SubTitleToolTip"] = _tooltip(senses)
             results.append(result)
 
+        return results
+
+    def _not_found_results(self, raw_query, sanitized):
+        suggestions = self._get_engine().suggest(sanitized, limit=MAX_SUGGESTIONS)
+        results = [{
+            "Title": f"'{raw_query}' bulunamadı",
+            "SubTitle": "Bunu mu demek istediniz?" if suggestions else "TDK sözlüğünde bu kelime mevcut değil.",
+            "IcoPath": PLUGIN_ICON,
+            "Score": (len(suggestions) + 1) * 100,
+        }]
+        for rank, word in enumerate(suggestions):
+            senses = self._definitions.cached(word)
+            results.append({
+                "Title": word,
+                "SubTitle": _describe(senses) if senses else f"TDK Sözlük'te '{word}' tanımını aç",
+                "IcoPath": PLUGIN_ICON,
+                "Score": (len(suggestions) - rank) * 100,
+                "JsonRPCAction": {"method": "open_url", "parameters": [word]},
+                "ContextData": word,
+            })
         return results
 
     def open_url(self, *args):
@@ -196,7 +213,8 @@ def _tdk_url(word):
 
 if __name__ == "__main__":
     # Flow reads stderr as UTF-8; Windows would otherwise use the ANSI code page (cp1254 on Turkish systems).
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    if sys.stderr is not None:  # pythonw.exe has no stderr unless Flow redirects it
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     plugin = TDKDictionary()
     server = Server(plugin.handlers(), concurrent=("query", "context_menu"))
     plugin.notify = server.notify

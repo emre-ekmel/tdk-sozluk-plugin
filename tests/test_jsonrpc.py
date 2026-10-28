@@ -133,6 +133,18 @@ class TestPluginSession:
     def test_not_found(self):
         results = _plugin().query(_query_obj("xqzw"), {})["result"]
         assert results[0]["Title"] == "'xqzw' bulunamadı"
+        assert results[0]["SubTitle"] == "TDK sözlüğünde bu kelime mevcut değil."
+        assert len(results) == 1
+
+    def test_not_found_suggests_words(self):
+        results = _plugin().query(_query_obj("kalwm"), {})["result"]
+        assert results[0]["SubTitle"] == "Bunu mu demek istediniz?"
+        assert "JsonRPCAction" not in results[0]
+        assert results[1]["Title"] == "kalem"
+        assert results[1]["JsonRPCAction"] == {"method": "open_url", "parameters": ["kalem"]}
+        assert results[1]["ContextData"] == "kalem"
+        scores = [r["Score"] for r in results]
+        assert scores == sorted(scores, reverse=True)
 
     def test_scores_descending(self):
         results = _plugin().query(_query_obj("kar"), {})["result"]

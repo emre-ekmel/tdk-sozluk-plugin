@@ -6,7 +6,7 @@
     "Name": "TDK Sözlük",
     "Description": "Türk Dil Kurumu sözlüğünde hızlı kelime araması yapın.",
     "Author": "emre-ekmel",
-    "Version": "1.1.0",
+    "Version": "2.0.0",
     "Language": "Python_v2",
     "Website": "https://github.com/emre-ekmel/tdk-sozluk-plugin",
     "IcoPath": "images/icon.png",

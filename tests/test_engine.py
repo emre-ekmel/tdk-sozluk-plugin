@@ -147,6 +147,18 @@ class TestSearchEngineWithRealData:
         keys = [search_key(w) for w in self.engine._words]
         assert keys == sorted(keys)
 
+    def test_real_suggestions(self):
+        assert self.engine.suggest("kalwm")[0] == "kalem"
+        assert self.engine.suggest("teşekür") == ["teşekkür"]
+        assert "kulak vermek" in self.engine.suggest("kulakvermek")
+
+    def test_performance_suggest_latency(self):
+        for q in ["bilgsayar", "kulakvermek", "xqzwvbn"]:
+            start = time.perf_counter()
+            self.engine.suggest(q)
+            elapsed_ms = (time.perf_counter() - start) * 1000
+            assert elapsed_ms < 200, f"suggest('{q}') took {elapsed_ms:.2f}ms (limit: 200ms)"
+
     def test_real_ascii_search(self):
         assert "şişman" in self.engine.search("sisman")
         assert "hâlâ" in self.engine.search("hala")
@@ -167,3 +179,44 @@ class TestSearchEngineWithRealData:
         tracemalloc.stop()
         peak_mb = peak / 1024 / 1024
         assert peak_mb < 20, f"Peak memory: {peak_mb:.2f} MB (limit: 20MB)"
+
+
+class TestSuggest:
+    def setup_method(self):
+        self.engine = _create_test_engine()
+
+    def test_replaced_letter(self):
+        assert self.engine.suggest("bilgisayqr")[0] == "bilgisayar"
+
+    def test_missing_letter(self):
+        assert self.engine.suggest("bilgsayar") == ["bilgisayar"]
+
+    def test_swapped_letters(self):
+        assert self.engine.suggest("şkeer")[0] == "şeker"
+
+    def test_typo_in_first_letter(self):
+        assert "zurna" in self.engine.suggest("xurna")
+
+    def test_extra_letter(self):
+        assert self.engine.suggest("güzzel")[0] == "güzel"
+
+    def test_ascii_typo(self):
+        assert self.engine.suggest("ogretmwn")[0] == "öğretmen"
+
+    def test_prefix_of_longer_word(self):
+        # "bilgisayqrc" is one edit from "bilgisayarc", the start of "bilgisayarcı"
+        assert "bilgisayarcı" in self.engine.suggest("bilgisayqrc")
+
+    def test_whole_word_before_prefix_match(self):
+        # "güzeel" -> "güzel" (delete) is a whole word; "güzell" (replace) only starts "güzellik"
+        results = self.engine.suggest("güzeel")
+        assert results.index("güzel") < results.index("güzellik")
+
+    def test_short_query_has_no_suggestions(self):
+        assert self.engine.suggest("xq") == []
+
+    def test_nothing_close(self):
+        assert self.engine.suggest("qqqqqq") == []
+
+    def test_limit(self):
+        assert len(self.engine.suggest("bilgi", limit=2)) <= 2

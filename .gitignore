@@ -11,6 +11,7 @@ lib/
 
 # Flow Launcher Store Submission (keep locally, don't push)
 TDKSozluk-*.json
+TDK Sözlük-*.json
 
 # Build artifacts
 *.zip

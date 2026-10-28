@@ -2,6 +2,7 @@ name: Publish Release
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches: [ main ]
     paths-ignore:
@@ -36,11 +37,27 @@ jobs:
           pip install pytest
           pytest
 
+      # Only publish when plugin.json has a version that hasn't been released yet,
+      # so pushes that don't bump the version never overwrite an existing release.
+      - name: Check for existing release
+        id: release
+        if: github.event_name != 'pull_request'
+        run: |
+          tag="v${{ steps.version.outputs.prop }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$tag is already released; bump Version in plugin.json to publish a new release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Zip files
+        if: steps.release.outputs.exists == 'false'
         run: |
           zip -r Flow.Launcher.Plugin.TDKSozluk.zip src data images main.py plugin.json
 
       - name: Publish
+        if: steps.release.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           files: 'Flow.Launcher.Plugin.TDKSozluk.zip'

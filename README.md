@@ -10,6 +10,7 @@ An offline-first Flow Launcher plugin for looking up Turkish words in the Turkis
 - **Typo-Friendly Matching:** Works without Turkish characters or circumflexes: `sisman` finds **şişman**, `hala` finds **hâlâ**, `bir seye` finds **(bir şeye) kulak vermek**.
 - **Persistent Process:** Uses Flow Launcher's JSON-RPC v2 (`Python_v2`) protocol, so the plugin starts once and answers each keystroke from memory.
 - **Zero External Dependencies:** Built using Python's standard library only, including the JSON-RPC layer.
+- **Did You Mean?:** If nothing matches, the plugin suggests words one typo away (`kalwm` → **kalem**, `teşekür` → **teşekkür**).
 - **Definitions in the Launcher:** When what you type is a whole word, its first meaning appears under the result (hover for more). These are fetched from the TDK API and cached; if you're offline, search still works and only the meanings are skipped.
 - **Browser Integration:** Select a word and press `Enter` to open the word's definition page on the official TDK website.
 
@@ -18,7 +19,7 @@ An offline-first Flow Launcher plugin for looking up Turkish words in the Turkis
 ### Via Flow Launcher (Direct)
 Open Flow Launcher, type `pm install`, and paste the release URL:
 ```cmd
-pm install https://github.com/emre-ekmel/tdk-sozluk-plugin/releases/download/v1.0.0/Flow.Launcher.Plugin.TDKSozluk.zip
+pm install https://github.com/emre-ekmel/tdk-sozluk-plugin/releases/download/v2.0.0/Flow.Launcher.Plugin.TDKSozluk.zip
 ```
 
 ### Manual Installation
